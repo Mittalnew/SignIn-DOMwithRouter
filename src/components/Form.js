@@ -1,6 +1,8 @@
-// src/Form.js
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import InputField from './InputField';
+import { Validation } from './Validation';
 
 
 function Form() {
@@ -17,8 +19,7 @@ function Form() {
     password: '',
   });
 
-    const [isSubmitted, setIsSubmitted] = useState(false);
-
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,35 +28,29 @@ function Form() {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    let isValid = true;
-    const newErrors =  { name: '', email: '', password: '' };
+      e.preventDefault();
+  console.log('handleSubmit function called'); // Add this line for debugging
 
-    if (formData.name === '') {
-      newErrors.name = 'Name is required';
-      isValid = false;
-    } 
+      const formErrors = Validation(formData);
+      console.log('Form errors:', formErrors);
 
-    if (formData.email === '') {
-      newErrors.email = 'Email is required';
-      isValid = false;
-    } 
+      setErrors(formErrors);
+      
+      if (Object.values(formErrors).every((error) => !error)) {
+// console.log('Before setIsSubmitted(true)');
 
-    if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long';
-      isValid = false;
-    } 
+          setIsSubmitted(true);
+          // console.log('After setIsSubmitted(true)');
 
-    setErrors(newErrors);
+        } else {
+    console.log('Form has errors'); // Add this line for debugging
+  }
+    };
 
-    if (isValid) {
-      setIsSubmitted(true); // Set a flag to show success message
-    }
-  };
-
-   useEffect(() => {
+ useEffect(() => {
     if (isSubmitted) {
-      // Redirect to the welcome page
+            // console.log('Navigating to /welcome'); // Debugging line
+
       navigate('/welcome');
     }
   }, [isSubmitted, navigate]);
@@ -63,61 +58,47 @@ function Form() {
 
   return (
     <div className="flex justify-center items-center h-screen bg-gradient-to-r from-blue-400 to-green-300">
-<div className="bg-blue-200 shadow-md rounded-md p-6 w-96 animate-fade-in">
+      <div className="bg-blue-200 shadow-md rounded-md p-6 w-96 animate-fade-in">
         <h1 className="text-xl font-bold mb-4 text-blue-500">HELLO USER</h1>
         <form onSubmit={handleSubmit}>
+          <InputField
+            id="name"
+            name="name"
+            label="Name:"
+            value={formData.name}
+            onChange={handleInputChange}
+            error={errors.name}
+          />
+          <InputField
+            id="email"
+            name="email"
+            label="Email:"
+            value={formData.email}
+            onChange={handleInputChange}
+            error={errors.email}
+          />
+          <InputField
+            id="password"
+            name="password"
+            label="Password:"
+            type="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            error={errors.password}
+          />
           <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Name:
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <span className="text-red-500 text-sm mt-1">{errors.name}</span>
+            <p className="text-sm text-gray-700">
+              New to here ?{' '}
+              <a href="/signup" className="text-blue-500 hover:underline">
+                Sign up now
+              </a>
+              .
+            </p>
           </div>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email:
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <span className="text-red-500 text-sm mt-1">{errors.email}</span>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password:
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <span className="text-red-500 text-sm mt-1">{errors.password}</span>
-          </div>
-
-          <div className="mb-4">
-           <p className="text-sm text-gray-700">New to here ?
-            <a href="/signup" className="text-blue-500 hover:underline">Sign up now</a>.</p>
-        </div>
-
           <div className="mb-4">
             <button
               type="submit"
-          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Submit
             </button>
